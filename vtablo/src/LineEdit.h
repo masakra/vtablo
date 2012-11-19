@@ -27,69 +27,25 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
+#ifndef LINEEDIT_H
+#define LINEEDIT_H
 
-#ifndef WIDGET_H
-#define WIDGET_H
+#include <QLineEdit>
 
-#define BG_DIR "background"
-
-#include <QWidget>
-#include <QPixmap>
-
-class QLabel;
-class QStackedLayout;
-class LineEdit;
-
-class Widget : public QWidget
+class LineEdit : public QLineEdit
 {
 	Q_OBJECT
 
-	private:
-		void loadFont();
-
-		void createWidgets();
-
-		QStackedLayout * stack;
-
-		QWidget * createPage_1();
-
-		QWidget * createPage_2();
-
-		void loadBackgroundNames();
-
-		QStringList listBackground;
-
-		int indexBackground;
-
-		void loadBackground();
-
-		QPixmap background;
-
-		void rotateBackground();
-
-		QLabel * label,
-			   * labelInput;
-
-		LineEdit * editInput;
-
-		void delay();
-
-		void toggleFontBold();
-
-		void toggleFontItalic();
-
-		void changeFontSize( int delta );
-
-	private Q_SLOTS:
-		void setDelay();
-		void inputEscaped();
-
 	protected:
 		virtual void keyPressEvent( QKeyEvent * event );
-		virtual void paintEvent( QPaintEvent * event );
+		virtual void focusOutEvent( QFocusEvent * event );
 
 	public:
-		Widget( QWidget * parent = 0 );
+		LineEdit( QWidget * parent );
+
+	Q_SIGNALS:
+		void escapePressed();
+		void focusOut();
 };
 
 #endif

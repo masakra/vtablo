@@ -27,70 +27,29 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
+#include "LineEdit.h"
 
-#ifndef WIDGET_H
-#define WIDGET_H
+#include <QtGui>
 
-#define BG_DIR "background"
-
-#include <QWidget>
-#include <QPixmap>
-
-class QLabel;
-class QStackedLayout;
-class LineEdit;
-
-class Widget : public QWidget
+LineEdit::LineEdit( QWidget * parent )
+	: QLineEdit( parent )
 {
-	Q_OBJECT
+}
 
-	private:
-		void loadFont();
+void
+LineEdit::keyPressEvent( QKeyEvent * event )
+{
+	if ( event->key() == Qt::Key_Escape )
+		emit escapePressed();
 
-		void createWidgets();
+	QLineEdit::keyPressEvent( event );
+}
 
-		QStackedLayout * stack;
+void
+LineEdit::focusOutEvent( QFocusEvent * event )
+{
+	emit focusOut();
 
-		QWidget * createPage_1();
-
-		QWidget * createPage_2();
-
-		void loadBackgroundNames();
-
-		QStringList listBackground;
-
-		int indexBackground;
-
-		void loadBackground();
-
-		QPixmap background;
-
-		void rotateBackground();
-
-		QLabel * label,
-			   * labelInput;
-
-		LineEdit * editInput;
-
-		void delay();
-
-		void toggleFontBold();
-
-		void toggleFontItalic();
-
-		void changeFontSize( int delta );
-
-	private Q_SLOTS:
-		void setDelay();
-		void inputEscaped();
-
-	protected:
-		virtual void keyPressEvent( QKeyEvent * event );
-		virtual void paintEvent( QPaintEvent * event );
-
-	public:
-		Widget( QWidget * parent = 0 );
-};
-
-#endif
+	QLineEdit::focusOutEvent( event );
+}
 
