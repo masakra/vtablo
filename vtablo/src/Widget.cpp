@@ -149,16 +149,39 @@ Widget::keyPressEvent( QKeyEvent * event )
 
 		case Qt::Key_F5:
 			stack->setCurrentIndex( 0 );
-			label->setText( "<FONT COLOR=lightskyblue>ПОСАДКА НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК</FONT>" );
+			label->setText( "<FONT COLOR=lightskyblue>"
+					"РЕГИСТРАЦИЯ НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК"
+					"</FONT>" );
 			break;
 
 		case Qt::Key_F6:
 			stack->setCurrentIndex( 0 );
-			label->setText( "<FONT COLOR=lightskyblue>ПОСАДКА НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК</FONT>"
-					"<FONT COLOR=red><BR>ОКОНЧЕНА</FONT>" );
+			label->setText( "<FONT COLOR=lightskyblue>"
+					"РЕГИСТРАЦИЯ НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК"
+					"</FONT>"
+					"<FONT COLOR=red><BR>"
+					"ОКОНЧЕНА"
+					"</FONT>" );
 			break;
 
 		case Qt::Key_F7:
+			stack->setCurrentIndex( 0 );
+			label->setText( "<FONT COLOR=lightskyblue>"
+					"ПОСАДКА НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК"
+					"</FONT>" );
+			break;
+
+		case Qt::Key_F8:
+			stack->setCurrentIndex( 0 );
+			label->setText( "<FONT COLOR=lightskyblue>"
+					"ПОСАДКА НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК"
+					"</FONT>"
+					"<FONT COLOR=red><BR>"
+					"ОКОНЧЕНА"
+					"</FONT>" );
+			break;
+
+		case Qt::Key_F9:
 			delay();
 			break;
 
