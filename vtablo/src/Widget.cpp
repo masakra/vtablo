@@ -5,8 +5,6 @@
  *   ICQ: 124231040                                                        *
  *   jabber: masakra@jabber.ru                                             *
  *                                                                         *
- *   All comments, if not ascii, in koi8-r                                 *
- *                                                                         *
  *   Permission is hereby granted, free of charge, to any person obtaining *
  *   a copy of this software and associated documentation files (the       *
  *   "Software"), to deal in the Software without restriction, including   *
@@ -26,7 +24,6 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-
 
 #include "Widget.h"
 
@@ -51,6 +48,7 @@ Widget::createWidgets()
 
 	stack->addWidget( createPage_1() );
 	stack->addWidget( createPage_2() );
+	stack->addWidget( createPage_3() );
 }
 
 QWidget *
@@ -107,6 +105,31 @@ Widget::createPage_2()
 	return w;
 }
 
+QWidget *
+Widget::createPage_3()
+{
+	QLabel * labelHelp = new QLabel( this );
+	labelHelp->setFont( QFont( "Ubuntu", 50 ) );
+
+	labelHelp->setText(
+			"<FONT COLOR=white>F1</FONT> - ΡΡ‚Ρ€Π°Π½ΠΈΡ†Π° ΠΏΠΎΠΌΠΎΡ‰ΠΈ<BR>"
+			"<FONT COLOR=white>F</FONT> - ΡΠΌΠµΠ½ΠΈΡ‚Ρ Ρ„ΠΎΠ½<BR>"
+			"<FONT COLOR=white>B</FONT> - Π¶ΠΈΡ€Π½Ρ‹ΠΉ ΡΡ€ΠΈΡ„Ρ‚<BR>"
+			"<FONT COLOR=white>I</FONT> - Π½Π°ΠΊΠ»ΠΎΠ½Π½Ρ‹ΠΉ ΡΡ€ΠΈΡ„Ρ‚<BR>"
+			"<FONT COLOR=white>+</FONT> - ΡƒΠ²ΠµΠ»ΠΈΡ‡ΠΈΡ‚Ρ ΡΡ€ΠΈΡ„Ρ‚<BR>"
+			"<FONT COLOR=white>-</FONT> - ΡƒΠΌΠµΠ½ΡΡΠΈΡ‚Ρ ΡΡ€ΠΈΡ„Ρ‚<BR>"
+
+			);
+
+	QWidget * w = new QWidget( this );
+	QVBoxLayout * layout = new QVBoxLayout( w );
+
+	layout->addWidget( labelHelp );
+	layout->addStretch();
+
+	return w;
+}
+
 void
 Widget::keyPressEvent( QKeyEvent * event )
 {
@@ -116,17 +139,23 @@ Widget::keyPressEvent( QKeyEvent * event )
 			close();
 			break;
 
+		case Qt::Key_F1:
+			stack->setCurrentIndex( 2 );
+			break;
+
 		case Qt::Key_F:
 			rotateBackground();
 			break;
 
 		case Qt::Key_F5:
-			label->setText( "<FONT COLOR=lightskyblue>ποσαδλα ξα ςεκσ 5N122 σομοχλι-αςθαξηεμψσλ</FONT>" );
+			stack->setCurrentIndex( 0 );
+			label->setText( "<FONT COLOR=lightskyblue>ΠΠΠ΅ΠΠ”ΠΠ ΠΠ Π Π•Π™Π΅ 5N122 Π΅ΠΠ›ΠΠ’ΠΠ-ΠΠ Π¥ΠΠΠ“Π•Π›Π¬Π΅Π</FONT>" );
 			break;
 
 		case Qt::Key_F6:
-			label->setText( "<FONT COLOR=lightskyblue>ποσαδλα ξα ςεκσ 5N122 σομοχλι-αςθαξηεμψσλ</FONT>"
-					"<FONT COLOR=red><BR>ολοξώεξα</FONT>" );
+			stack->setCurrentIndex( 0 );
+			label->setText( "<FONT COLOR=lightskyblue>ΠΠΠ΅ΠΠ”ΠΠ ΠΠ Π Π•Π™Π΅ 5N122 Π΅ΠΠ›ΠΠ’ΠΠ-ΠΠ Π¥ΠΠΠ“Π•Π›Π¬Π΅Π</FONT>"
+					"<FONT COLOR=red><BR>ΠΠΠΠΠ§Π•ΠΠ</FONT>" );
 			break;
 
 		case Qt::Key_F7:
@@ -153,25 +182,6 @@ Widget::keyPressEvent( QKeyEvent * event )
 			qDebug() << event->key();
 	}
 
-
-	/*
-	if ( event->key() == Qt::Key_Q )
-		close();
-
-	if ( event->key() == Qt::Key_F )
-		rotateBackground();
-
-	if ( event->key() == Qt::Key_F5 )
-		label->setText( "<FONT COLOR=lightskyblue>ποσαδλα ξα ςεκσ 5N122 σομοχλι-αςθαξηεμψσλ</FONT>" );
-
-	if ( event->key() == Qt::Key_F6 )
-		label->setText( "<FONT COLOR=lightskyblue>ποσαδλα ξα ςεκσ 5N122 σομοχλι-αςθαξηεμψσλ</FONT>"
-				"<FONT COLOR=red><BR>ολοξώεξα</FONT>" );
-
-	if ( event->key() == Qt::Key_F7 )
-		delay();
-		*/
-
 	QWidget::keyPressEvent( event );
 }
 
@@ -186,7 +196,8 @@ Widget::paintEvent( QPaintEvent * /*event*/ )
 void
 Widget::delay()
 {
-	labelInput->setText( "ϊΑΔΕÒΦΛΑ ΔΟ" );
+	labelInput->setText( "Π—Π°Π΄ΠµΡ€Π¶ΠΊΠ° Π΄ΠΎ" );
+	label->setAlignment( Qt::AlignCenter );
 
 	editInput->clear();
 	editInput->setInputMask( "09:00" );
@@ -206,8 +217,8 @@ Widget::setDelay()
 	if ( QTime::fromString( time, "h:mm" ).isValid() ||
 			QTime::fromString( time, "hh:mm" ).isValid() ) {
 
-		label->setText( QString("<FONT COLOR=lightskyblue>ςεκσ 5N122 σομοχλι-αςθαξηεμψσλ "
-				"ϊαδεςφιχαετσρ δο %1</FONT>").arg( time ) );
+		label->setText( QString("<FONT COLOR=lightskyblue>Π Π•Π™Π΅ 5N122 Π΅ΠΠ›ΠΠ’ΠΠ-ΠΠ Π¥ΠΠΠ“Π•Π›Π¬Π΅Π "
+				"Π—ΠΠ”Π•Π Π–ΠΠ’ΠΠ•ΠΆΠ΅Π― Π”Π %1</FONT>").arg( time ) );
 
 		stack->setCurrentIndex( 0 );
 	}

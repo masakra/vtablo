@@ -5,8 +5,6 @@
  *   ICQ: 124231040                                                        *
  *   jabber: masakra@jabber.ru                                             *
  *                                                                         *
- *   All comments, if not ascii, in koi8-r                                 *
- *                                                                         *
  *   Permission is hereby granted, free of charge, to any person obtaining *
  *   a copy of this software and associated documentation files (the       *
  *   "Software"), to deal in the Software without restriction, including   *
@@ -41,7 +39,7 @@ main( int argc, char ** argv )
 	app.setApplicationVersion( "0.1.0" );
 	app.setOrganizationName( "Nordavia-RA" );
 
-	QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "KOI8-R" ) );
+	QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
 
 	Widget w;
 
