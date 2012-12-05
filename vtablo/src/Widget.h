@@ -32,6 +32,7 @@
 #define BG_DIR "background"
 
 #include <QWidget>
+#include <QHash>
 #include <QPixmap>
 
 class QLabel;
@@ -43,7 +44,37 @@ class Widget : public QWidget
 	Q_OBJECT
 
 	private:
-		void loadFont();
+		static const char * messages[][2];
+
+		/** \enum Language
+		 *
+		 * \brief Язык отображаемой инормации
+		 */
+		enum Language {
+			Rus = 0,	///< Русский
+			Eng = 1,	///< Английский
+			RusEng		///< Переключающийся
+
+		} language,
+		  languageMode;
+
+		/** \enum InfoType
+		 *
+		 * \brief Тип отображаемой информации
+		 */
+		enum InfoType {
+			Registration = 0,			///< Регистрация
+			RegistrationFinished = 1,	///< Регистрация закончена
+			Boarding = 2,				///< Посадка
+			BoardingFinished =3,		///< Посадка закончена
+			Detention = 4,				///< Задержка
+			Arbitrary = 5,				///< Произвольный текст
+			Nothing = 6,				///< Ничего
+
+			Ignore = -1
+		} infoType;
+
+		void changeLanguageMode();
 
 		void createWidgets();
 
@@ -72,7 +103,7 @@ class Widget : public QWidget
 
 		LineEdit * editInput;
 
-		void delay();
+		void detention();
 
 		void toggleFontBold();
 
@@ -80,9 +111,16 @@ class Widget : public QWidget
 
 		void changeFontSize( int delta );
 
+		void loadSettings();
+
+		QString reys;		// the current reys
+
+		//void refresh( InfoType type = Ignore );
+
 	private Q_SLOTS:
-		void setDelay();
+		void setDetention();
 		void inputEscaped();
+		void refresh( InfoType type = Ignore );
 
 	protected:
 		virtual void keyPressEvent( QKeyEvent * event );

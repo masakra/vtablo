@@ -33,12 +33,34 @@
 
 #include <QDebug>
 
+
+const char * Widget::messages[][2] = {
+	// Registration = 0
+	{ "РЕГИСТРАЦИЯ ПАССАЖИРОВ НА РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК",
+		"CHECK-IN FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=springgreen>IS OPEN</font>" },
+	// RegistrationFinished = 1
+	{ "РЕГИСТРАЦИЯ ПАССАЖИРОВ НА РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК <font color=red>ОКОНЧЕНА</font>",
+		"CHECK-IN FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=red>IS CLOSED</red>" },
+	// Boarding = 2
+	{ "ПОСАДКА НА РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК",
+		"BOARDING ON FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=springgreen>IS OPEN</font>" },
+	// BoardingFinished = 3
+	{ "ПОСАДКА НА РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК <font color=red>ОКОНЧЕНА</font>",
+		"BOARDING ON FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=red>IS CLOSED</red>" },
+	// Detention = 4
+	{ "РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК <font color=red>ЗАДЕРЖИВАЕТСЯ ДО %2</font>",
+		"FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=red>IS DELAYED %2</font>" }
+};
+
 Widget::Widget( QWidget * parent )
-	: QWidget( parent )
+	: QWidget( parent ), language( Rus ), languageMode( Rus ), infoType( Registration )
 {
-	loadFont();
 	loadBackgroundNames();
 	createWidgets();
+
+	loadSettings();
+
+	refresh();
 }
 
 void
@@ -109,7 +131,7 @@ QWidget *
 Widget::createPage_3()
 {
 	QLabel * labelHelp = new QLabel( this );
-	labelHelp->setFont( QFont( "Ubuntu", 50 ) );
+	labelHelp->setFont( QFont( "Ubuntu", 40 ) );
 
 	labelHelp->setText(
 			"<FONT COLOR=white>F1</FONT> - страница помощи<BR>"
@@ -118,7 +140,12 @@ Widget::createPage_3()
 			"<FONT COLOR=white>I</FONT> - наклонный шрифт<BR>"
 			"<FONT COLOR=white>+</FONT> - увеличить шрифт<BR>"
 			"<FONT COLOR=white>-</FONT> - уменьшить шрифт<BR>"
-
+			"<FONT COLOR=white>L</FONT> - Русский, English, Русский/English через 5 сек.<BR>"
+			"<FONT COLOR=white>F5</FONT> - регистрация<BR>"
+			"<FONT COLOR=white>F6</FONT> - регистрация окончена<BR>"
+			"<FONT COLOR=white>F7</FONT> - посадка<BR>"
+			"<FONT COLOR=white>F8</FONT> - посадка окончена<BR>"
+			"<FONT COLOR=white>F9</FONT> - задержка<BR>"
 			);
 
 	QWidget * w = new QWidget( this );
@@ -149,56 +176,51 @@ Widget::keyPressEvent( QKeyEvent * event )
 
 		case Qt::Key_F5:
 			stack->setCurrentIndex( 0 );
-			label->setText( "<FONT COLOR=lightskyblue>"
-					"РЕГИСТРАЦИЯ НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК"
-					"</FONT>" );
+			refresh( Registration );
 			break;
 
 		case Qt::Key_F6:
 			stack->setCurrentIndex( 0 );
-			label->setText( "<FONT COLOR=lightskyblue>"
-					"РЕГИСТРАЦИЯ НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК"
-					"</FONT>"
-					"<FONT COLOR=red><BR>"
-					"ОКОНЧЕНА"
-					"</FONT>" );
+			refresh( RegistrationFinished );
 			break;
 
 		case Qt::Key_F7:
 			stack->setCurrentIndex( 0 );
-			label->setText( "<FONT COLOR=lightskyblue>"
-					"ПОСАДКА НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК"
-					"</FONT>" );
+			refresh( Boarding );
 			break;
 
 		case Qt::Key_F8:
 			stack->setCurrentIndex( 0 );
-			label->setText( "<FONT COLOR=lightskyblue>"
-					"ПОСАДКА НА РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК"
-					"</FONT>"
-					"<FONT COLOR=red><BR>"
-					"ОКОНЧЕНА"
-					"</FONT>" );
+			refresh( BoardingFinished );
 			break;
 
 		case Qt::Key_F9:
-			delay();
+			detention();
 			break;
 
 		case Qt::Key_B:
+			stack->setCurrentIndex( 0 );
 			toggleFontBold();
 			break;
 
 		case Qt::Key_I:
+			stack->setCurrentIndex( 0 );
 			toggleFontItalic();
 			break;
 
 		case Qt::Key_Plus:
+			stack->setCurrentIndex( 0 );
 			changeFontSize( 5 );
 			break;
 
 		case Qt::Key_Minus:
+			stack->setCurrentIndex( 0 );
 			changeFontSize( -5 );
+			break;
+
+		case Qt::Key_L:
+			stack->setCurrentIndex( 0 );
+			changeLanguageMode();
 			break;
 
 		default:
@@ -217,7 +239,7 @@ Widget::paintEvent( QPaintEvent * /*event*/ )
 }
 
 void
-Widget::delay()
+Widget::detention()
 {
 	labelInput->setText( "Задержка до" );
 	label->setAlignment( Qt::AlignCenter );
@@ -227,23 +249,23 @@ Widget::delay()
 	editInput->setText( "00:00" );
 	editInput->setFocus();
 
-	connect( editInput, SIGNAL( returnPressed() ), SLOT( setDelay() ) );
+	connect( editInput, SIGNAL( returnPressed() ), SLOT( setDetention() ) );
 
 	stack->setCurrentIndex( 1 );
 }
 
 void
-Widget::setDelay()
+Widget::setDetention()
 {
 	const QString time = editInput->text().trimmed();
 
 	if ( QTime::fromString( time, "h:mm" ).isValid() ||
 			QTime::fromString( time, "hh:mm" ).isValid() ) {
 
-		label->setText( QString("<FONT COLOR=lightskyblue>РЕЙС 5N122 СОЛОВКИ-АРХАНГЕЛЬСК "
-				"ЗАДЕРЖИВАЕТСЯ ДО %1</FONT>").arg( time ) );
+		editInput->disconnect();
 
 		stack->setCurrentIndex( 0 );
+		refresh( Detention );
 	}
 }
 
@@ -332,17 +354,6 @@ Widget::toggleFontItalic()
 }
 
 void
-Widget::loadFont()
-{
-	QSettings settings;
-
-	qApp->setFont( QFont( "Ubuntu",
-				settings.value( "font_size", 120 ).toInt(),
-				settings.value( "font_bold", true ).toBool() ? QFont::Bold : QFont::Normal,
-				settings.value( "font_italic", false ).toBool() ) );
-}
-
-void
 Widget::changeFontSize( int delta )
 {
 	QFont f( qApp->font() );
@@ -359,5 +370,61 @@ Widget::changeFontSize( int delta )
 	QSettings settings;
 
 	settings.setValue( "font_size", ps );
+}
+
+void
+Widget::changeLanguageMode()
+{
+	if ( languageMode == Rus )
+		language = languageMode = Eng;
+	else if ( languageMode == Eng ) {
+		languageMode = RusEng;
+		language = Rus;
+	} else
+		language = languageMode = Rus;
+
+	refresh();
+}
+
+void
+Widget::loadSettings()
+{
+	QSettings settings;
+
+	qApp->setFont( QFont( "Ubuntu",
+				settings.value( "font_size", 120 ).toInt(),
+				settings.value( "font_bold", true ).toBool() ? QFont::Bold : QFont::Normal,
+				settings.value( "font_italic", false ).toBool() ) );
+
+	reys = settings.value( "reys", "5N122" ).toString();
+}
+
+void
+Widget::refresh( InfoType type )
+{
+	if ( type != Ignore )
+		infoType = type;
+
+	QString msg( messages[ infoType ][ language ] );
+
+	switch ( infoType ) {
+		case Registration ... BoardingFinished:
+			msg = msg.arg( reys );
+			break;
+
+		case Detention:
+			msg = msg.arg( reys, editInput->text() );
+			break;
+
+		default:
+			;
+	}
+
+	label->setText( msg );
+
+	if ( languageMode == RusEng ) {
+		language = ( Language ) qAbs( language - 1 );
+		QTimer::singleShot( 5000, this, SLOT( refresh() ) );
+	}
 }
 
