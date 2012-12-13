@@ -76,7 +76,8 @@ Widget::createWidgets()
 QWidget *
 Widget::createPage_1()
 {
-	QSvgWidget * logo = new QSvgWidget( "svg/nordavia.svg", this );
+	QSvgWidget * logo = new QSvgWidget( qApp->applicationDirPath() + QDir::separator() +
+			"svg/nordavia.svg", this );
 
 	QHBoxLayout * layoutLogo = new QHBoxLayout();
 
