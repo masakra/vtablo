@@ -142,6 +142,7 @@ Widget::createPage_3()
 			"<FONT COLOR=white>+</FONT> - увеличить шрифт<BR>"
 			"<FONT COLOR=white>-</FONT> - уменьшить шрифт<BR>"
 			"<FONT COLOR=white>L</FONT> - Русский, English, Русский/English через 5 сек.<BR>"
+			"<FONT COLOR=white>R</FONT> - установка рейса<BR>"
 			"<FONT COLOR=white>F5</FONT> - регистрация<BR>"
 			"<FONT COLOR=white>F6</FONT> - регистрация окончена<BR>"
 			"<FONT COLOR=white>F7</FONT> - посадка<BR>"
@@ -196,7 +197,7 @@ Widget::keyPressEvent( QKeyEvent * event )
 			break;
 
 		case Qt::Key_F9:
-			detention();
+			inputDetention();
 			break;
 
 		case Qt::Key_B:
@@ -224,6 +225,10 @@ Widget::keyPressEvent( QKeyEvent * event )
 			changeLanguageMode();
 			break;
 
+		case Qt::Key_R:
+			inputReys();
+			break;
+
 		default:
 			qDebug() << event->key();
 	}
@@ -240,7 +245,7 @@ Widget::paintEvent( QPaintEvent * /*event*/ )
 }
 
 void
-Widget::detention()
+Widget::inputDetention()
 {
 	labelInput->setText( "Задержка до" );
 	label->setAlignment( Qt::AlignCenter );
@@ -428,4 +433,41 @@ Widget::refresh( InfoType type )
 		QTimer::singleShot( 5000, this, SLOT( refresh() ) );
 	}
 }
+
+void
+Widget::inputReys()
+{
+	labelInput->setText("Рейс");
+
+	editInput->clear();
+	editInput->setInputMask( "" );
+	editInput->setText( reys );
+	editInput->setFocus();
+
+	connect( editInput, SIGNAL( returnPressed() ), SLOT( setReys() ) );
+
+	stack->setCurrentIndex( 1 );
+}
+
+void
+Widget::setReys()
+{
+	const QString r = editInput->text().trimmed();
+
+	if ( ! r.isEmpty() && r != reys ) {
+
+		editInput->disconnect();
+
+		reys = r;
+
+		QSettings settings;
+
+		settings.setValue( "reys", reys );
+
+		refresh();
+	}
+
+	stack->setCurrentIndex( 0 );
+}
+
 

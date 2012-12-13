@@ -103,7 +103,7 @@ class Widget : public QWidget
 
 		LineEdit * editInput;
 
-		void detention();
+		void inputDetention();
 
 		void toggleFontBold();
 
@@ -113,12 +113,15 @@ class Widget : public QWidget
 
 		void loadSettings();
 
+		void inputReys();
+
 		QString reys;		// the current reys
 
 		//void refresh( InfoType type = Ignore );
 
 	private Q_SLOTS:
 		void setDetention();
+		void setReys();
 		void inputEscaped();
 		void refresh( InfoType type = Ignore );
 
