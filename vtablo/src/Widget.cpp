@@ -60,6 +60,8 @@ Widget::Widget( QWidget * parent )
 
 	loadSettings();
 
+	setCursor( QCursor( QPixmap(":/trans.png") ) );
+
 	refresh();
 }
 
