@@ -62,7 +62,7 @@ Widget::Widget( QWidget * parent )
 
 	setCursor( QCursor( QPixmap(":/trans.png") ) );
 
-	setMaximumSize( QApplication::desktop()->size() );
+	//setMaximumSize( QApplication::desktop()->size() );
 
 	refresh();
 }
@@ -222,6 +222,8 @@ Widget::keyPressEvent( QKeyEvent * event )
 	else if ( key == Qt::Key_Minus ) {
 		stack->setCurrentIndex( 0 );
 		changeFontSize( -5 );
+		//resize( qApp->desktop()->size() );
+		setMaximumSize( qApp->desktop()->size() );
 	}
 
 	else if ( key == Qt::Key_L || scode == 46 ) {
