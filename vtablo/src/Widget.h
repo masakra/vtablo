@@ -119,9 +119,14 @@ class Widget : public QWidget
 
 		//void refresh( InfoType type = Ignore );
 
+		void inputArbitrary();
+
+		QString arbitrary;
+
 	private Q_SLOTS:
 		void setDetention();
 		void setReys();
+		void setArbitrary();
 		void inputEscaped();
 		void refresh( InfoType type = Ignore );
 

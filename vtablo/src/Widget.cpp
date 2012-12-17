@@ -62,6 +62,8 @@ Widget::Widget( QWidget * parent )
 
 	setCursor( QCursor( QPixmap(":/trans.png") ) );
 
+	setMaximumSize( QApplication::desktop()->size() );
+
 	refresh();
 }
 
@@ -164,76 +166,72 @@ Widget::createPage_3()
 void
 Widget::keyPressEvent( QKeyEvent * event )
 {
+	const int key = event->key();
+	const quint32 scode = event->nativeScanCode();
 
-	switch ( event->key() ) {
-		case Qt::Key_Q:
-			close();
-			break;
+	if ( key == Qt::Key_Q || scode == 24 )
+		close();
 
-		case Qt::Key_F1:
-			stack->setCurrentIndex( 2 );
-			break;
+	else if ( key == Qt::Key_F1 )
+		stack->setCurrentIndex( 2 );
 
-		case Qt::Key_F:
-			rotateBackground();
-			break;
+	else if ( key == Qt::Key_F || scode == 41 )
+		rotateBackground();
 
-		case Qt::Key_F5:
-			stack->setCurrentIndex( 0 );
-			refresh( Registration );
-			break;
-
-		case Qt::Key_F6:
-			stack->setCurrentIndex( 0 );
-			refresh( RegistrationFinished );
-			break;
-
-		case Qt::Key_F7:
-			stack->setCurrentIndex( 0 );
-			refresh( Boarding );
-			break;
-
-		case Qt::Key_F8:
-			stack->setCurrentIndex( 0 );
-			refresh( BoardingFinished );
-			break;
-
-		case Qt::Key_F9:
-			inputDetention();
-			break;
-
-		case Qt::Key_B:
-			stack->setCurrentIndex( 0 );
-			toggleFontBold();
-			break;
-
-		case Qt::Key_I:
-			stack->setCurrentIndex( 0 );
-			toggleFontItalic();
-			break;
-
-		case Qt::Key_Plus:
-			stack->setCurrentIndex( 0 );
-			changeFontSize( 5 );
-			break;
-
-		case Qt::Key_Minus:
-			stack->setCurrentIndex( 0 );
-			changeFontSize( -5 );
-			break;
-
-		case Qt::Key_L:
-			stack->setCurrentIndex( 0 );
-			changeLanguageMode();
-			break;
-
-		case Qt::Key_R:
-			inputReys();
-			break;
-
-		default:
-			qDebug() << event->key();
+	else if ( key == Qt::Key_F5 ) {
+		stack->setCurrentIndex( 0 );
+		refresh( Registration );
 	}
+
+	else if ( key == Qt::Key_F6 ) {
+		stack->setCurrentIndex( 0 );
+		refresh( RegistrationFinished );
+	}
+
+	else if ( key == Qt::Key_F7 ) {
+		stack->setCurrentIndex( 0 );
+		refresh( Boarding );
+	}
+
+	else if ( key == Qt::Key_F8 ) {
+		stack->setCurrentIndex( 0 );
+		refresh( BoardingFinished );
+	}
+
+	else if ( key == Qt::Key_F9 )
+		inputDetention();
+
+	else if ( key == Qt::Key_F10 )
+		inputArbitrary();
+
+	else if ( key == Qt::Key_B || scode == 56 ) {
+		stack->setCurrentIndex( 0 );
+		toggleFontBold();
+	}
+
+	else if ( key == Qt::Key_I || scode == 31 ) {
+		stack->setCurrentIndex( 0 );
+		toggleFontItalic();
+	}
+
+	else if ( key == Qt::Key_Plus ) {
+		stack->setCurrentIndex( 0 );
+		changeFontSize( 5 );
+	}
+
+	else if ( key == Qt::Key_Minus ) {
+		stack->setCurrentIndex( 0 );
+		changeFontSize( -5 );
+	}
+
+	else if ( key == Qt::Key_L || scode == 46 ) {
+		stack->setCurrentIndex( 0 );
+		changeLanguageMode();
+	}
+
+	else if ( key == Qt::Key_R || scode == 27 )
+		inputReys();
+
 
 	QWidget::keyPressEvent( event );
 }
@@ -405,6 +403,8 @@ Widget::loadSettings()
 				settings.value( "font_italic", false ).toBool() ) );
 
 	reys = settings.value( "reys", "5N122" ).toString();
+
+	arbitrary = settings.value( "arbitrary", QString() ).toString();
 }
 
 void
@@ -413,7 +413,12 @@ Widget::refresh( InfoType type )
 	if ( type != Ignore )
 		infoType = type;
 
-	QString msg( messages[ infoType ][ language ] );
+	QString msg;
+
+	if ( infoType == Arbitrary )
+		msg = arbitrary;
+	else
+		msg = messages[ infoType ][ language ];
 
 	switch ( infoType ) {
 		case Registration ... BoardingFinished:
@@ -472,4 +477,36 @@ Widget::setReys()
 	stack->setCurrentIndex( 0 );
 }
 
+void
+Widget::inputArbitrary()
+{
+	labelInput->setText("Произвольный текст");
+
+	editInput->clear();
+	editInput->setInputMask( "" );
+	editInput->setText( arbitrary );
+	editInput->setFocus();
+
+	connect( editInput, SIGNAL( returnPressed() ), SLOT( setArbitrary() ) );
+
+	stack->setCurrentIndex( 1 );
+}
+
+void
+Widget::setArbitrary()
+{
+	const QString a = editInput->text().trimmed();
+
+	editInput->disconnect();
+
+	arbitrary = a;
+
+	QSettings settings;
+
+	settings.setValue( "arbitrary", arbitrary );
+
+	refresh( Arbitrary );
+
+	stack->setCurrentIndex( 0 );
+}
 
