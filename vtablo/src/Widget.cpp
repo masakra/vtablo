@@ -36,26 +36,27 @@
 
 const char * Widget::messages[][2] = {
 	// Registration = 0
-	{ "РЕГИСТРАЦИЯ ПАССАЖИРОВ НА РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК",
-		"CHECK-IN FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=springgreen>IS OPEN</font>" },
+	{ "РЕГИСТРАЦИЯ ПАССАЖИРОВ НА РЕЙС %1<BR>СОЛОВКИ - АРХАНГЕЛЬСК",
+		"CHECK-IN FLIGHT %1<BR>SOLOVKI - ARKHANGELSK<BR><font color=springgreen>IS OPEN</font>" },
 	// RegistrationFinished = 1
-	{ "РЕГИСТРАЦИЯ ПАССАЖИРОВ НА РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК <font color=red>ОКОНЧЕНА</font>",
-		"CHECK-IN FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=red>IS CLOSED</red>" },
+	{ "РЕГИСТРАЦИЯ ПАССАЖИРОВ НА РЕЙС %1<BR>СОЛОВКИ - АРХАНГЕЛЬСК<BR><font color=red>ОКОНЧЕНА</font>",
+		"CHECK-IN FLIGHT %1<BR>SOLOVKI - ARKHANGELSK<BR><font color=red>IS CLOSED</red>" },
 	// Boarding = 2
 	{ "ПОСАДКА НА РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК",
-		"BOARDING ON FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=springgreen>IS OPEN</font>" },
+		"BOARDING ON FLIGHT %1<BR>SOLOVKI - ARKHANGELSK<BR><font color=springgreen>IS OPEN</font>" },
 	// BoardingFinished = 3
-	{ "ПОСАДКА НА РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК <font color=red>ОКОНЧЕНА</font>",
-		"BOARDING ON FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=red>IS CLOSED</red>" },
+	{ "ПОСАДКА НА РЕЙС %1<BR>СОЛОВКИ - АРХАНГЕЛЬСК<BR><font color=red>ОКОНЧЕНА</font>",
+		"BOARDING ON FLIGHT %1<BR>SOLOVKI - ARKHANGELSK<BR><font color=red>IS CLOSED</red>" },
 	// Detention = 4
-	{ "РЕЙС %1 СОЛОВКИ - АРХАНГЕЛЬСК <font color=red>ЗАДЕРЖИВАЕТСЯ ДО %2</font>",
-		"FLIGHT %1 SOLOVKI - ARKHANGELSK <font color=red>IS DELAYED %2</font>" }
+	{ "РЕЙС %1<BR>СОЛОВКИ - АРХАНГЕЛЬСК<BR><font color=red>ЗАДЕРЖИВАЕТСЯ ДО %2</font>",
+		"FLIGHT %1<BR>SOLOVKI - ARKHANGELSK<BR><font color=red>IS DELAYED %2</font>" }
 };
 
 Widget::Widget( QWidget * parent )
 	: QWidget( parent ), language( Rus ), languageMode( Rus ), infoType( Registration )
 {
 	loadBackgroundNames();
+
 	createWidgets();
 
 	loadSettings();
@@ -80,7 +81,7 @@ Widget::createWidgets()
 QWidget *
 Widget::createPage_1()
 {
-	QSvgWidget * logo = new QSvgWidget( qApp->applicationDirPath() + QDir::separator() +
+	logo = new QSvgWidget( qApp->applicationDirPath() + QDir::separator() +
 			"svg/nordavia.svg", this );
 
 	QHBoxLayout * layoutLogo = new QHBoxLayout();
@@ -136,7 +137,8 @@ QWidget *
 Widget::createPage_3()
 {
 	QLabel * labelHelp = new QLabel( this );
-	labelHelp->setFont( QFont( "Ubuntu", 40 ) );
+	//labelHelp->setFont( QFont( "Ubuntu", 40 ) ); TODO uncomment
+	labelHelp->setFont( QFont( "Ubuntu", 20 ) );
 
 	labelHelp->setText(
 			"<FONT COLOR=white>F1</FONT> - страница помощи<BR>"
@@ -152,6 +154,7 @@ Widget::createPage_3()
 			"<FONT COLOR=white>F7</FONT> - посадка<BR>"
 			"<FONT COLOR=white>F8</FONT> - посадка окончена<BR>"
 			"<FONT COLOR=white>F9</FONT> - задержка<BR>"
+			"<FONT COLOR=white>F10</FONT> - произвольный текст<BR>"
 			);
 
 	QWidget * w = new QWidget( this );
@@ -234,6 +237,8 @@ Widget::keyPressEvent( QKeyEvent * event )
 	else if ( key == Qt::Key_R || scode == 27 )
 		inputReys();
 
+	else if ( key == Qt::Key_N || scode == 57 )
+		toggleLogo();
 
 	QWidget::keyPressEvent( event );
 }
@@ -391,7 +396,18 @@ Widget::changeLanguageMode()
 	} else
 		language = languageMode = Rus;
 
+	changeLanguage();
+}
+
+void
+Widget::changeLanguage()
+{
 	refresh();
+
+	if ( languageMode == RusEng ) {
+		language = ( Language ) qAbs( language - 1 );
+		QTimer::singleShot( 5000, this, SLOT( changeLanguage() ) );
+	}
 }
 
 void
@@ -436,11 +452,6 @@ Widget::refresh( InfoType type )
 	}
 
 	label->setText( msg );
-
-	if ( languageMode == RusEng ) {
-		language = ( Language ) qAbs( language - 1 );
-		QTimer::singleShot( 5000, this, SLOT( refresh() ) );
-	}
 }
 
 void
@@ -510,5 +521,11 @@ Widget::setArbitrary()
 	refresh( Arbitrary );
 
 	stack->setCurrentIndex( 0 );
+}
+
+void
+Widget::toggleLogo()
+{
+	logo->setVisible( ! logo->isVisible() );
 }
 

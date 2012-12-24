@@ -37,6 +37,7 @@
 
 class QLabel;
 class QStackedLayout;
+class QSvgWidget;
 class LineEdit;
 
 class Widget : public QWidget
@@ -77,6 +78,8 @@ class Widget : public QWidget
 		void changeLanguageMode();
 
 		void createWidgets();
+
+		QSvgWidget * logo;
 
 		QStackedLayout * stack;
 
@@ -123,12 +126,15 @@ class Widget : public QWidget
 
 		QString arbitrary;
 
+		void toggleLogo();
+
 	private Q_SLOTS:
 		void setDetention();
 		void setReys();
 		void setArbitrary();
 		void inputEscaped();
 		void refresh( InfoType type = Ignore );
+		void changeLanguage();
 
 	protected:
 		virtual void keyPressEvent( QKeyEvent * event );
