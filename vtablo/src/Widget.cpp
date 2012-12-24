@@ -137,8 +137,8 @@ QWidget *
 Widget::createPage_3()
 {
 	QLabel * labelHelp = new QLabel( this );
-	//labelHelp->setFont( QFont( "Ubuntu", 40 ) ); TODO uncomment
-	labelHelp->setFont( QFont( "Ubuntu", 20 ) );
+	labelHelp->setFont( QFont( "Ubuntu", 40 ) );
+	//labelHelp->setFont( QFont( "Ubuntu", 20 ) );
 
 	labelHelp->setText(
 			"<FONT COLOR=white>F1</FONT> - страница помощи<BR>"
